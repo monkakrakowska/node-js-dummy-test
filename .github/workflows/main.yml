@@ -1,0 +1,31 @@
+name: Build for ino_dev
+
+on:
+  push:
+    branches: [ino_dev]
+  pull_request:
+    branches: [ino_dev]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
+      - run: npm run build --if-present
+      
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: |
+            dist/
+            build/
+            public/
+        if: always()
